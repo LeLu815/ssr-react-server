@@ -1,8 +1,8 @@
 import { sign as _sign, verify as _verify } from "jsonwebtoken";
 import { uid } from "rand-token";
 import { options, secretKey } from "../config/secretkey";
-const TOKEN_EXPIRED = -3;
-const TOKEN_INVALID = -2;
+export const TOKEN_EXPIRED = -3;
+export const TOKEN_INVALID = -2;
 
 // 생성하기
 export async function sign(user) {
