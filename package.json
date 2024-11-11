@@ -2,7 +2,7 @@
   "name": "q",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js"
+    "dev": "nodemon --exec babel-node src/init.js"
   },
   "repository": {
     "type": "git",
@@ -16,9 +16,15 @@
   "homepage": "https://github.com/LeLu815/ssr-react-server#readme",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.8.1",
+    "multer": "^1.4.5-lts.1",
     "rand-token": "^1.0.1"
   },
   "devDependencies": {

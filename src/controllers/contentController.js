@@ -1,1 +1,1 @@
-export const home = async (req, res) => {};
+export const search = async (req, res) => {};

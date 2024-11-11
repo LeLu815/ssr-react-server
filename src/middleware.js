@@ -1,4 +1,4 @@
-import { TOKEN_EXPIRED, TOKEN_INVALID } from "./modules/jwt";
+import multer from "multer";
 
 export const publicOnlyMiddleware = async (req, res, next) => {
   const accessToken = req.cookies.accessToken; // access 쿠키에서 토큰을 가져옵니다.
@@ -9,10 +9,7 @@ export const publicOnlyMiddleware = async (req, res, next) => {
   }
   const verificationResult = await verify(accessToken); // accessToken 검증
 
-  if (
-    verificationResult === TOKEN_EXPIRED &&
-    verificationResult === TOKEN_INVALID
-  ) {
+  if (verificationResult instanceof number) {
     // accessToken이 만료된 경우, accessToken이 유효하지 않은 경우 : accessToken을 삭제해주는 로직
     res.clearCookie("accessToken"); // accessToken 쿠키를 삭제합니다.
     return next(); // 만료된 경우에도 다음 미들웨어로 이동
@@ -38,3 +35,14 @@ export const protectorMiddleware = async (req, res, next) => {
     .status(403)
     .json({ error: "로그아웃 상태입니다. 접근이 거부되었습니다." });
 };
+
+// multer 설정
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/avatar/"); // public/avatar 디렉토리에 저장
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname); // 파일 이름 설정
+  },
+});
+export const upload = multer({ storage });

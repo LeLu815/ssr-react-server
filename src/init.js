@@ -1,4 +1,8 @@
-import app from "./src/server";
+import dotenv from "dotenv";
+// .env.local 파일을 로드
+dotenv.config();
+
+import app from "./server";
 
 const PORT = process.env.PORT || 4000;
 
