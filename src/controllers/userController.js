@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { connectToDatabase } from "../db";
 import User from "../models/User";
 import { sign } from "../modules/jwt";
@@ -49,19 +50,29 @@ export const postJoin = async (req, res) => {
 export const postLogin = async (req, res) => {
   const db = await connectToDatabase();
   const col = db.collection("users");
+  const { id, password } = req.body;
+
+  // 필수 데이터 검증
+  if (!id || !password) {
+    return res.status(400).json({ message: "모든 필드를 입력해야 합니다." });
+  }
 
   // 패스워드 해쉬
-  const hashedPassword = await hashPassword(req.password);
+  const hashedPassword = await User.hashPassword(password);
+
   // 유저 아이디로 유저 찾아서 비밀번호 비교
-  const user = await col.findOne({ id: req.id });
-  const match = (await user.password) === hashedPassword;
+  const user = await col.findOne({ id });
+  // const match = user.password === hashedPassword;
+  const match = await bcrypt.compare(password, hashedPassword);
+
+  console.log(user, match);
 
   if (!match) {
     return res.status(400).json({ message: "비밀번호가 다릅니다." });
   }
 
   // 쿠키에 새로운 토큰 저장
-  setTokensInCookies(res, user);
+  await setTokensInCookies(res, user);
 
   return res.status(200).json({ message: "로그인 성공!" });
 };
