@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getTestCookie,
   postJoin,
   postLogin,
   postLogout,
@@ -13,6 +14,7 @@ userRouter.route("/join").all(publicOnlyMiddleware).post(postJoin);
 userRouter.route("/login").all(publicOnlyMiddleware).post(postLogin);
 userRouter.route("/logout").all(publicOnlyMiddleware).post(postLogout);
 // userRouter.route("/avatar").all(protectorMiddleware).post(postUploadAvatar);
+userRouter.route("/cookie").get(getTestCookie);
 userRouter.route("/refresh").post(postRefresh);
 
 export default userRouter;

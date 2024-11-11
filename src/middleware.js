@@ -1,17 +1,17 @@
 import multer from "multer";
+import { ACCESS_TOKEN } from "./modules/jwt";
 
 export const publicOnlyMiddleware = async (req, res, next) => {
-  const accessToken = req.cookies.accessToken; // access 쿠키에서 토큰을 가져옵니다.
-  // const refreshToken = req.cookies.refreshToken; // refresh 쿠키에서 토큰을 가져옵니다.
+  const accessToken = req.cookies[ACCESS_TOKEN]; // access 쿠키에서 토큰을 가져옵니다.
 
   if (!accessToken) {
     return next(); // accessToken이 없으면 다음 미들웨어로 이동
   }
   const verificationResult = await verify(accessToken); // accessToken 검증
 
-  if (verificationResult instanceof number) {
+  if (typeof verificationResult === "number") {
     // accessToken이 만료된 경우, accessToken이 유효하지 않은 경우 : accessToken을 삭제해주는 로직
-    res.clearCookie("accessToken"); // accessToken 쿠키를 삭제합니다.
+    res.clearCookie(ACCESS_TOKEN); // accessToken 쿠키를 삭제합니다.
     return next(); // 만료된 경우에도 다음 미들웨어로 이동
   }
 
@@ -22,11 +22,11 @@ export const publicOnlyMiddleware = async (req, res, next) => {
 };
 
 export const protectorMiddleware = async (req, res, next) => {
-  const accessToken = req.cookies.accessToken; // access 쿠키에서 토큰을 가져옵니다.
+  const accessToken = req.cookies[ACCESS_TOKEN]; // access 쿠키에서 토큰을 가져옵니다.
 
   if (accessToken) {
     const verificationResult = await verify(accessToken);
-    if (!(verificationResult instanceof number)) {
+    if (!(typeof verificationResult === "number")) {
       // 디코딩이 성공적일경우
       return next();
     }

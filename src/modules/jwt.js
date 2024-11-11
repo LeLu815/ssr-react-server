@@ -1,25 +1,29 @@
 import { sign as _sign, verify as _verify } from "jsonwebtoken";
-import { uid } from "rand-token";
 export const TOKEN_EXPIRED = -3;
 export const TOKEN_INVALID = -2;
+export const ACCESS_TOKEN = "accesstoken";
+export const REFRESH_TOKEN = "refreshtoken";
 
 // 생성하기
-export async function sign(user) {
+export async function sign(user, type) {
   /* 현재는 idx와 email을 payload로 넣었지만 필요한 값을 넣으면 됨! */
   const payload = {
     idx: user.id,
     email: user.nickname,
   };
-  const result = {
-    //sign메소드를 통해 access token 발급!
-    token: _sign(payload, process.env.SECRET_KEY, {
-      algorithm: process.env.ALGORITHM,
-      expiresIn: "40m", // 토큰 유효 기간
-      issuer: process.env.ISSUER, // 발행자
-    }),
-    refreshToken: uid(256),
+  const tokenOptions = {
+    algorithm: process.env.ALGORITHM,
+    issuer: process.env.ISSUER, // 발행자
   };
-  return result;
+  // 타입에 따라 만료 시간을 설정
+  if (type === ACCESS_TOKEN) {
+    tokenOptions.expiresIn = "20m"; // 엑세스 토큰 유효 기간
+  } else if (type === REFRESH_TOKEN) {
+    tokenOptions.expiresIn = "2d"; // 리프레시 토큰 유효 기간
+  }
+  const token = _sign(payload, process.env.SECRET_KEY, tokenOptions);
+  console.log("sign token:", token);
+  return token;
 }
 
 // 검증하기
