@@ -1,13 +1,18 @@
 import express from "express";
-import { postJoin, postLogin } from "../controllers/userController";
+import {
+  postJoin,
+  postLogin,
+  postLogout,
+  postRefresh,
+} from "../controllers/userController";
 import { publicOnlyMiddleware } from "../middleware";
 
 const userRouter = express.Router();
 
 userRouter.route("/join").all(publicOnlyMiddleware).post(postJoin);
 userRouter.route("/login").all(publicOnlyMiddleware).post(postLogin);
-// userRouter.route("/logout").all(publicOnlyMiddleware).post(postLogout);
+userRouter.route("/logout").all(publicOnlyMiddleware).post(postLogout);
 // userRouter.route("/avatar").all(protectorMiddleware).post(postUploadAvatar);
-// userRouter.route("/refresh").post(postRefresh);
+userRouter.route("/refresh").post(postRefresh);
 
 export default userRouter;
