@@ -102,8 +102,6 @@ export const getTestCookie = async (req, res) => {
 export const postRefresh = async (req, res) => {
   const refreshToken = req.cookies[REFRESH_TOKEN]; // 쿠키에서 리프레시 토큰 가져오기
 
-  console.log(req.cookies, req.cookies[REFRESH_TOKEN]);
-
   if (!refreshToken) {
     return res.status(401).json({ message: "리프레시 토큰이 없습니다." });
   }
@@ -132,28 +130,25 @@ export const postRefresh = async (req, res) => {
   return res.status(200).json({ message: "토큰 재발급에 성공했습니다." });
 };
 
-// // 유저 프로필 저장 로직
-// export const postUploadAvatar = async (req, res) => {
-//   const accessToken = req.cookies[ACCESS_TOKEN]; // access 쿠키에서 토큰을 가져옵니다.
-//   const verificationResult = await verify(accessToken); // 리프레시 토큰 검증 함수 (예: JWT 사용)
-//   // payload에서 사용자 정보를 추출
-//   const user = {
-//     id: verificationResult.idx, // idx를 사용자 ID로 사용
-//     nickname: verificationResult.email, // email을 사용자 닉네임으로 사용
-//   };
+// 유저 프로필 저장 로직
+export const postUploadAvatar = async (req, res) => {
+  console.log("req.body:", req.body); // 요청 본문 로그
+  console.log("req.file:", req.file); // 업로드된 파일 로그
 
-//   const uploadMiddleware = upload.single("avatar");
-//   uploadMiddleware(req, res, async (err) => {
-//     if (err) {
-//       return res.status(500).json({ message: "파일 업로드 실패" });
-//     }
-// }
-// // 이미지 파일이 업로드된 경우
-// if (req.file) {
-//   const avatarUrl = `/avatars/${req.file.filename}`; // 저장된 이미지 경로 설정
-//   await updateUser(db, user.id, { avatarUrl }); // 유저 프로필 업데이트
-// }
+  if (!req.file) {
+    return res.status(400).json({ message: "파일 업로드에 실패했습니다." });
+  }
+  // 업로드된 파일의 URL 생성
+  const avatarUrl = `/public/avatars/${req.file.filename}`;
 
-// 쿠키에 새로운 토큰 저장
-// setTokensInCookies(res, user.id);
-// };
+  // 토큰을 이용한 유저 아이디 추출
+  const accessToken = req.cookies[ACCESS_TOKEN];
+  const verificationResult = await verify(accessToken);
+  const userId = verificationResult.idx;
+
+  const db = await connectToDatabase();
+  // db, userId, newAvatarUrl
+  await User.updateAvatarUrl(db, userId, avatarUrl);
+
+  return res.status(200).json({ message: "프로필 변경 성공.", avatarUrl });
+};

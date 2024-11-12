@@ -32,6 +32,27 @@ const User = {
       throw new Error("유저 생성에 실패했습니다.");
     }
   },
+
+  // avatarUrl 변경 함수
+  async updateAvatarUrl(db, userId, newAvatarUrl) {
+    try {
+      const result = await db.collection("users").updateOne(
+        { id: userId }, // 유저 ID로 검색
+        { $set: { avatarUrl: newAvatarUrl } } // 새로운 avatarUrl로 업데이트
+      );
+
+      if (result.modifiedCount === 0) {
+        throw new Error("유저의 avatarUrl을 업데이트하는 데 실패했습니다.");
+      }
+
+      // 업데이트된 유저 정보를 반환
+      const updatedUser = await db.collection("users").findOne({ id: userId });
+      return updatedUser;
+    } catch (error) {
+      console.error("avatarUrl 업데이트 실패:", error);
+      throw new Error("avatarUrl 업데이트에 실패했습니다.");
+    }
+  },
 };
 
 export default User;

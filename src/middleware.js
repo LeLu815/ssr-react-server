@@ -1,5 +1,5 @@
 import multer from "multer";
-import { ACCESS_TOKEN } from "./modules/jwt";
+import { ACCESS_TOKEN, verify } from "./modules/jwt";
 
 export const publicOnlyMiddleware = async (req, res, next) => {
   const accessToken = req.cookies[ACCESS_TOKEN]; // access 쿠키에서 토큰을 가져옵니다.
@@ -39,7 +39,7 @@ export const protectorMiddleware = async (req, res, next) => {
 // multer 설정
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/avatar/"); // public/avatar 디렉토리에 저장
+    cb(null, "public/avatars/"); // public/avatar 디렉토리에 저장
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname); // 파일 이름 설정

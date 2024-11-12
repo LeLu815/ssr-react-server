@@ -22,7 +22,6 @@ export async function sign(user, type) {
     tokenOptions.expiresIn = "2d"; // 리프레시 토큰 유효 기간
   }
   const token = _sign(payload, process.env.SECRET_KEY, tokenOptions);
-  console.log("sign token:", token);
   return token;
 }
 

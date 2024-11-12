@@ -5,15 +5,23 @@ import {
   postLogin,
   postLogout,
   postRefresh,
+  postUploadAvatar,
 } from "../controllers/userController";
-import { publicOnlyMiddleware } from "../middleware";
+import {
+  protectorMiddleware,
+  publicOnlyMiddleware,
+  upload,
+} from "../middleware";
 
 const userRouter = express.Router();
 
 userRouter.route("/join").all(publicOnlyMiddleware).post(postJoin);
 userRouter.route("/login").all(publicOnlyMiddleware).post(postLogin);
 userRouter.route("/logout").all(publicOnlyMiddleware).post(postLogout);
-// userRouter.route("/avatar").all(protectorMiddleware).post(postUploadAvatar);
+userRouter
+  .route("/avatar")
+  .all(protectorMiddleware)
+  .post(upload.single("avatar"), postUploadAvatar);
 userRouter.route("/cookie").get(getTestCookie);
 userRouter.route("/refresh").post(postRefresh);
 
