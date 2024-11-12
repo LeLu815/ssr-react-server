@@ -20,6 +20,36 @@ const setTokensInCookies = async (res, user) => {
   });
 };
 
+// 유저정보 리턴 로직
+export const getUser = async (req, res) => {
+  try {
+    // 토큰을 이용한 유저 아이디 추출
+    const accessToken = req.cookies[ACCESS_TOKEN];
+    const verificationResult = await verify(accessToken);
+    const userId = verificationResult.idx;
+    const db = await connectToDatabase();
+
+    // 유저 찾기
+    const user = await User.findUserById(db, userId);
+    const { password, ...userInfo } = user;
+
+    // 유저 정보 반환
+    return res
+      .status(200)
+      .json({ message: "유저 정보 조회 성공", user: userInfo });
+  } catch (error) {
+    console.error("유저 정보 조회 중 오류 발생:", error);
+
+    // 유저를 찾지 못했을 때의 처리
+    if (error.message === "유저를 찾을 수 없습니다.") {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+    }
+
+    // 일반적인 오류 처리
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
 // 회원가입 로직
 export const postJoin = async (req, res) => {
   const db = await connectToDatabase();
@@ -132,9 +162,6 @@ export const postRefresh = async (req, res) => {
 
 // 유저 프로필 저장 로직
 export const postUploadAvatar = async (req, res) => {
-  console.log("req.body:", req.body); // 요청 본문 로그
-  console.log("req.file:", req.file); // 업로드된 파일 로그
-
   if (!req.file) {
     return res.status(400).json({ message: "파일 업로드에 실패했습니다." });
   }

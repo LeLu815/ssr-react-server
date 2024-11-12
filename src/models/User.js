@@ -53,6 +53,20 @@ const User = {
       throw new Error("avatarUrl 업데이트에 실패했습니다.");
     }
   },
+
+  // 유저 ID로 유저 찾기
+  async findUserById(db, userId) {
+    try {
+      const user = await db.collection("users").findOne({ id: userId });
+      if (!user) {
+        throw new Error("유저를 찾을 수 없습니다.");
+      }
+      return user;
+    } catch (error) {
+      console.error("유저 조회 실패:", error);
+      throw new Error("유저 조회에 실패했습니다.");
+    }
+  },
 };
 
 export default User;

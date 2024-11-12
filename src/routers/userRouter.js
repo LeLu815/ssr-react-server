@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getTestCookie,
+  getUser,
   postJoin,
   postLogin,
   postLogout,
@@ -15,6 +16,7 @@ import {
 
 const userRouter = express.Router();
 
+userRouter.route("/info").all(protectorMiddleware).get(getUser);
 userRouter.route("/join").all(publicOnlyMiddleware).post(postJoin);
 userRouter.route("/login").all(publicOnlyMiddleware).post(postLogin);
 userRouter.route("/logout").all(publicOnlyMiddleware).post(postLogout);
